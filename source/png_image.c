@@ -181,6 +181,11 @@ void drawLine(int x1, int y1, int x2, int y2, png_bytep color, Png* image) {
 }
 
 void drawLineThick(int x1, int y1, int x2, int y2, int thick, png_bytep color, Png* image) {
+    if (x1 < 0 || x2 < 0 || y1 < 0 || y2 < 0 || x1 > image->width || x2 > image->width || y2 > image->height ||
+        y1 > image->height || x1-thick/2 < 0 || x2-thick/2 < 0 || y1-thick/2 < 0 || y2-thick/2 < 0 ||
+        x1+thick/2 > image->width || x2+thick/2 > image->width || y1+thick/2 > image->height ||
+        y2+thick/2 > image->height)
+        return;
     if (abs(y2-y1) > abs(x2-x1))
         for (int i = -thick/2; i < thick/2; i++)
             drawLine(x1+i, y1, x2+i, y2, color, image);
@@ -305,21 +310,20 @@ void rectangles(int thick, png_bytep colorTo, png_bytep colorFrom, Png* image) {
                 int flag = 0;
                 int y = i, x = j;
 
-                while (array[y][x] == IN_RECTANGLE) {
+		while (array[y][x] == IN_RECTANGLE && x+1 < width) {
                     if (array[y][x+1] == CHECKED) flag = 1;
                     array[y][x++] = CHECKED;
                 }
 
                 if (flag) continue;
-
                 x--;
                 y++;
+                if (y >= height)continue;
 
-                while (array[y][x] == IN_RECTANGLE) {
+                while (array[y][x] == IN_RECTANGLE && y+1 < height) {
                     if (array[y+1][x] == CHECKED) flag = 1;
                     array[y++][x] = CHECKED;
                 }
-
                 if (flag) continue;
                 rectangles[count].x1 = j, rectangles[count].y1 = i;
                 rectangles[count].x2 = x, rectangles[count++].y2 = y;
