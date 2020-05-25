@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
                     printHelp();
                     return 1;
                 }
-                if (strcmp(argv[optind], "--color") && strcmp(argv[optind], "-c")) {
+                if (!strcmp(argv[optind], "--color") && !strcmp(argv[optind], "-c")) {
                     printHelp();
                     return 1;
                 }
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
                     printHelp();
                     return 1;
                 }
-                if (strcmp(argv[optind], "--color") && strcmp(argv[optind], "-c")) {
+                if (!strcmp(argv[optind], "--color") && !strcmp(argv[optind], "-c")) {
                     printHelp();
                     return 1;
                 }
