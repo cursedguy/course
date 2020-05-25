@@ -48,8 +48,6 @@ Png* readPng(const char *filePath) {
     image->color_type = png_get_color_type(image->png_ptr, image->info_ptr);
     image->bit_depth = png_get_bit_depth(image->png_ptr, image->info_ptr);
 
-    image->number_of_passes = png_set_interlace_handling(image->png_ptr);
-    png_read_update_info(image->png_ptr, image->info_ptr);
 
     if (setjmp(png_jmpbuf(image->png_ptr))) {
         png_destroy_read_struct(&image->png_ptr, NULL, NULL);
@@ -57,14 +55,31 @@ Png* readPng(const char *filePath) {
         free(image);
         return NULL;
     }
+    
+    if (image->bit_depth == 16)
+        png_set_strip_16(image->png_ptr);
 
-    if (image->bit_depth != 8 || (image->color_type != PNG_COLOR_TYPE_RGB &&
-			    image->color_type != PNG_COLOR_TYPE_RGBA)) {
-	printf("Данное изображение не поддерживается.\n");
-        png_destroy_read_struct(&image->png_ptr, NULL, NULL);
-        fclose(pFile);
-        return NULL;
-    }
+    if (image->color_type == PNG_COLOR_TYPE_PALETTE)
+        png_set_palette_to_rgb(image->png_ptr);
+
+    if (image->color_type == PNG_COLOR_TYPE_GRAY && image->bit_depth < 8)
+        png_set_expand_gray_1_2_4_to_8(image->png_ptr);
+
+    if (png_get_valid(image->png_ptr, image->info_ptr, PNG_INFO_tRNS))
+        png_set_tRNS_to_alpha(image->png_ptr);
+
+    if (image->color_type == PNG_COLOR_TYPE_RGB ||
+            image->color_type == PNG_COLOR_TYPE_GRAY ||
+            image->color_type == PNG_COLOR_TYPE_PALETTE)
+        png_set_filler(image->png_ptr, 0xFF, PNG_FILLER_AFTER);
+
+    if (image->color_type == PNG_COLOR_TYPE_GRAY ||
+            image->color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+        png_set_gray_to_rgb(image->png_ptr);
+    
+
+    image->number_of_passes = png_set_interlace_handling(image->png_ptr);
+    png_read_update_info(image->png_ptr, image->info_ptr);
 
     image->row_pointers = malloc(sizeof(png_bytep) * image->height);
     for (int y = 0; y < image->height; y++)
@@ -98,12 +113,6 @@ void writePng(const char *filePath, Png *image) {
         return;
     }
 
-    if (setjmp(png_jmpbuf(pngStructPtr))){
-        png_destroy_write_struct(&pngStructPtr, &pngInfoStructPtr);
-        fclose(pFile);
-        return;
-    }
-
     png_init_io(pngStructPtr, pFile);
 
     if (setjmp(png_jmpbuf(pngStructPtr))){
@@ -111,6 +120,7 @@ void writePng(const char *filePath, Png *image) {
         fclose(pFile);
         return;
     }
+
 
     png_set_IHDR(pngStructPtr, pngInfoStructPtr, image->width, image->height, 8, PNG_COLOR_TYPE_RGBA,
                  PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
