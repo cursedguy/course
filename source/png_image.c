@@ -121,7 +121,6 @@ void writePng(const char *filePath, Png *image) {
         return;
     }
 
-
     png_set_IHDR(pngStructPtr, pngInfoStructPtr, image->width, image->height, 8, PNG_COLOR_TYPE_RGBA,
                  PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
     png_write_info(pngStructPtr, pngInfoStructPtr);
