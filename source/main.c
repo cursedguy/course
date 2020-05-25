@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
                     printHelp();
                     return 1;
                 }
-                if (!strcmp(argv[optind], "--color") && !strcmp(argv[optind], "-c")) {
+                if (strcmp(argv[optind], "--color") && strcmp(argv[optind], "-c")) {
                     printHelp();
                     return 1;
                 }
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
                     printHelp();
                     return 1;
                 }
-                if (options.frameType != GRADIENT || options.frameType != LINES) {
+                if (options.frameType != GRADIENT && options.frameType != LINES) {
                    printHelp();
                    return 1;
                 }
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
                     printHelp();
                     return 1;
                 }
-                if (!strcmp(argv[optind], "--color") && !strcmp(argv[optind], "-c")) {
+                if (strcmp(argv[optind], "--color") && strcmp(argv[optind], "-c")) {
                     printHelp();
                     return 1;
                 }
@@ -185,14 +185,14 @@ int main(int argc, char *argv[]) {
                 }
                 break;
             case 'c':
-                if (!options.repaint || !options.rect) {
+                if (options.repaint != 1 && options.rect != 1) {
                     printHelp();
                     return 1;
                 }
                 options.color = 1;
                 break;
             case 'f':
-                if (!options.color || !optarg) {
+                if (options.color != 1 || optarg == NULL) {
                     printHelp();
                     return 1;
                 }
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
                 options.to = 1;
                 break;
             case 't':
-                if (!options.to || !optarg) {
+                if (options.to != 1 || optarg == NULL) {
                     printHelp();
                     return 1;
                 }
