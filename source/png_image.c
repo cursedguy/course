@@ -318,13 +318,14 @@ void rectangles(int thick, png_bytep colorTo, png_bytep colorFrom, Png* image) {
                 if (flag) continue;
                 x--;
                 y++;
-                if (y >= height)continue;
+                if (y >= height) continue;
 
                 while (array[y][x] == IN_RECTANGLE && y+1 < height) {
                     if (array[y+1][x] == CHECKED) flag = 1;
                     array[y++][x] = CHECKED;
                 }
                 if (flag) continue;
+		    
                 rectangles[count].x1 = j, rectangles[count].y1 = i;
                 rectangles[count].x2 = x, rectangles[count++].y2 = y;
                 rectangles = realloc(rectangles, (count+1) * sizeof(Rectangle_t));
