@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
                     printHelp();
                     return 1;
                 }
-                if (options.frameType != GRADIENT && options.frameType != LINES) {
+                if (options.frameType != GRADIENT || options.frameType != LINES) {
                    printHelp();
                    return 1;
                 }
@@ -185,14 +185,14 @@ int main(int argc, char *argv[]) {
                 }
                 break;
             case 'c':
-                if (!options.repaint && !options.rect) {
+                if (!options.repaint || !options.rect) {
                     printHelp();
                     return 1;
                 }
                 options.color = 1;
                 break;
             case 'f':
-                if (!options.color && !optarg) {
+                if (!options.color || !optarg) {
                     printHelp();
                     return 1;
                 }
